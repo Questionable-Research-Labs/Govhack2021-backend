@@ -56,10 +56,10 @@ const createRequest = (request: GitHubFileRequest) => `{
 const updateDatePushed = async () => {
   let request: any = await octokit.graphql(
     createRequest({
-      owner: "Questionable-Research-Labs",
-      repoName: "Govhack2021-backend",
-      path: "src/index.ts",
-      branch: "main",
+      owner: "LaSpruca",
+      repoName: "TheBigSend",
+      path: "README.md",
+      branch: "master",
     })
   );
 

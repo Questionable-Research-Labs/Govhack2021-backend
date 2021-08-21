@@ -94,9 +94,9 @@ const updateDatePushed = async () => {
       registrationTokens.length > 0
     ) {
       const message: admin.messaging.MulticastMessage = {
-        data: {
-          no: "yes",
-          yes: "no",
+        notification: {
+          title: "New Covid19 Locations of interest",
+          body: "The Covid19 locations of interest have been updated, check the app to see if there are any around you.",
         },
         tokens: registrationTokens,
       };

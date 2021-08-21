@@ -1,9 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
+import axios from "axios";
 import { Octokit } from "octokit";
 import { env } from "process";
 import cors from "cors";
 import admin from "firebase-admin";
+import { addRegistrationToken, getRegistrationTokens } from "./firebase";
+import { createRequest, graphql } from "./github";
 
 dotenv.config();
 
@@ -21,59 +24,9 @@ app.use(
 const port = 5000;
 
 let datePushed: string = "";
-let registrationTokens: string[] = [];
-
-// Pro tip: Generate a personal access token!
-const octokit = new Octokit({ auth: env.API_KEY, userAgent: "toiv0.1.0" });
-const serviceAccount = JSON.parse(env.SERVICE_ACCOUNT);
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-const db = admin.firestore();
-
-// Decide wether in dev enviourment or production env (if there ever was a difference)
-const docName = env.DEV ? "devTokens" : "tokens";
-
-// Get a reference to the firebase tokens
-let docRef = db.collection("registrationTokens").doc(docName);
-
-// Get tokens from firestore
-(async () => {
-  let doc = await docRef.get();
-  registrationTokens = doc.data()["tokens"].filter((e: string) => e !== "");
-  console.log("Fetched tokens from firesotre", registrationTokens);
-})();
-
-interface GitHubFileRequest {
-  owner: string;
-  repoName: string;
-  path: string;
-  branch: string;
-}
-
-// Function to build query for GitHub to get latest commit date
-const createRequest = (request: GitHubFileRequest) => `{
-  repository(owner: "${request.owner}", name: "${request.repoName}") {
-    ref(qualifiedName: "refs/heads/${request.branch}") {
-      target {
-        ... on Commit {
-          history(first: 1, path: "${request.path}") {
-            edges {
-              node {
-                committedDate
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}`;
 
 const updateDatePushed = async () => {
-  let request: any = await octokit.graphql(
+  let request: any = await graphql(
     createRequest({
       owner: "minhealthnz",
       repoName: "nz-covid-data",
@@ -91,14 +44,14 @@ const updateDatePushed = async () => {
     if (
       datePushed !== "" &&
       newDatePushed !== datePushed &&
-      registrationTokens.length > 0
+      getRegistrationTokens().length > 0
     ) {
       const message: admin.messaging.MulticastMessage = {
         notification: {
           title: "New Covid19 Locations of interest",
           body: "The Covid19 locations of interest have been updated, check the app to see if there are any around you.",
         },
-        tokens: registrationTokens,
+        tokens: getRegistrationTokens(),
       };
 
       // Send a message to the device corresponding to the provided
@@ -135,27 +88,17 @@ app.get("/updated", (req, res) => {
 app.post("/push-notification/:token", async (req, res) => {
   let token = req.params.token;
   // Add to list of tokens
-  registrationTokens.push(token);
+  addRegistrationToken(token);
   console.log("Adding token ", token);
   res.send("Ok");
-
-  // Update firesotre
-  await docRef.set({
-    tokens: registrationTokens,
-  });
 });
 
 app.delete("/push-notification/:token", async (req, res) => {
   let token = req.params.token;
   // Remove from list of tokens
-  registrationTokens = registrationTokens.filter((e) => e != token);
-  console.log("Removing token", token, "\nTokens are", registrationTokens);
+  removeRegistrationToken(token);
+  console.log("Removing token", token);
   res.send("Ok");
-
-  // Update firestore
-  await docRef.set({
-    tokens: registrationTokens,
-  });
 });
 
 app.listen(port, () => {

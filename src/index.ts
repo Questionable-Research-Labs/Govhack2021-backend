@@ -67,10 +67,6 @@ const updateDatePushed = async () => {
     let newDatePushed =
       request?.repository?.ref?.target?.history?.edges[0]?.node?.committedDate;
 
-    if (datePushed !== "" && newDatePushed !== datePushed) {
-      console.log("Holey fucking shit we did a thing");
-    }
-
     if (
       datePushed !== "" &&
       newDatePushed !== datePushed &&
@@ -101,8 +97,8 @@ const updateDatePushed = async () => {
 
 updateDatePushed();
 
-// setInterval(updateDatePushed, 30 * 1000 * 60);
-setInterval(updateDatePushed, 1000);
+setInterval(updateDatePushed, 15 * 1000 * 60);
+// setInterval(updateDatePushed, 1000);
 
 app.get("/updated", (req, res) => {
   res.send(

@@ -3,6 +3,11 @@ Gets the latest commit to the data set
 ## Params
 None
 
+# GET /loi
+Gets the locations of interest
+# Params
+None
+
 # POST /push-notification/<token>
 Registers device for push notifications
 ## Params

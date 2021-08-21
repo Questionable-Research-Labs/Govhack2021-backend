@@ -1,4 +1,4 @@
-import express from "express";
+import express, { application } from "express";
 import axios from "axios";
 import cors from "cors";
 import admin from "firebase-admin";
@@ -9,6 +9,7 @@ import {
   getRegistrationTokens,
   loiCountDelta,
   removeRegistrationToken,
+  getLoiCount,
 } from "./firebase";
 import { createRequest, graphql } from "./github";
 
@@ -51,7 +52,7 @@ const updateDatePushed = async () => {
       newPushedDate !== pushedDate &&
       getRegistrationTokens().length > 0
     ) {
-      let loiDelta = loiCountDelta();
+      let loiDelta = await loiCountDelta();
       const message: admin.messaging.MulticastMessage = {
         notification: {
           title: "New Covid19 Locations of interest",
@@ -90,6 +91,14 @@ app.get("/updated", (req, res) => {
   res.send(
     JSON.stringify({
       getDatePushed: getDatePushed(),
+    })
+  );
+});
+
+app.get("/loi", (req, res) => {
+  res.send(
+    JSON.stringify({
+      loi: getLoiCount(),
     })
   );
 });

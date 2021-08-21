@@ -90,6 +90,7 @@ export const removeRegistrationToken = async (token: string) => {
   await updateFirestoreTokens();
 };
 
+/** Get difference in the number of locations in interest from previous commit vs now */
 export const loiCountDelta = async () => {
   let response = await axios.get(
     "https://raw.githubusercontent.com/minhealthnz/nz-covid-data/main/locations-of-interest/august-2021/locations-of-interest.geojson"
@@ -109,8 +110,10 @@ export const loiCountDelta = async () => {
   }
 };
 
+/** Get locations of interest count */
 export const getLoiCount = () => datasetInfo.loiCount;
 
+/** Update the date of the latest commit to the data */
 export const setDatePushed = async (date: string) => {
   datasetInfo = {
     ...datasetInfo,
@@ -121,4 +124,5 @@ export const setDatePushed = async (date: string) => {
   await datasetInfoDocRef.set(datasetInfo);
 };
 
+/** Get the date the of the latest commit to the dataset */
 export const getDatePushed = () => datasetInfo.pushedDate;

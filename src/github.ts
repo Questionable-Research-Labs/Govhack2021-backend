@@ -1,5 +1,9 @@
 import { Octokit } from "octokit";
 import { env } from "process";
+import { config } from "dotenv";
+
+// Load stuff from .env
+config();
 
 // Pro tip: Generate a personal access token!
 const octokit = new Octokit({ auth: env.API_KEY, userAgent: "toiv0.1.0" });

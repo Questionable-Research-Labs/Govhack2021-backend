@@ -1,14 +1,14 @@
 import express from "express";
-import dotenv from "dotenv";
 import axios from "axios";
-import { Octokit } from "octokit";
-import { env } from "process";
 import cors from "cors";
 import admin from "firebase-admin";
-import { addRegistrationToken, getRegistrationTokens } from "./firebase";
+import {
+  addRegistrationToken,
+  getRegistrationTokens,
+  loiCountDelta,
+  removeRegistrationToken,
+} from "./firebase";
 import { createRequest, graphql } from "./github";
-
-dotenv.config();
 
 const app = express();
 
@@ -39,17 +39,20 @@ const updateDatePushed = async () => {
   if (request?.repository?.ref?.target?.history?.edges.length > 0) {
     let newDatePushed =
       request?.repository?.ref?.target?.history?.edges[0]?.node?.committedDate;
-
+    if (datePushed == "") {
+      loiCountDelta();
+    }
     // Check to see if the date has updated
     if (
       datePushed !== "" &&
       newDatePushed !== datePushed &&
       getRegistrationTokens().length > 0
     ) {
+      let loiDelta = loiCountDelta();
       const message: admin.messaging.MulticastMessage = {
         notification: {
           title: "New Covid19 Locations of interest",
-          body: "The Covid19 locations of interest have been updated, check the app to see if there are any around you.",
+          body: `There are ${loiDelta} new Covid19 locations of interest, check the app to see if there are any around you.`,
         },
         tokens: getRegistrationTokens(),
       };

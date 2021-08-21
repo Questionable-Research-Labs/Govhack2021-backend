@@ -1,11 +1,20 @@
 import express from "express";
 import dotenv from "dotenv";
 import { Octokit, App } from "octokit";
-import { env } from "process";
+import { allowedNodeEnvironmentFlags, env } from "process";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://govhack2021.fallstop.workers.dev",
+    ],
+  })
+);
 const port = 5000;
 
 let datePushed: string = "";

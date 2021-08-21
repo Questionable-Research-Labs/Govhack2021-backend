@@ -68,9 +68,9 @@ let datasetInfo: DatasetInfo;
 })();
 
 /** Updates the tokens stored in firestore to match local data */
-const updateFirestore = async () =>
+const updateFirestoreTokens = async () =>
   tokensDocRef.set({
-    tokens: registrationTokens,
+    tokens: Array.from(registrationTokens),
   });
 
 /** Gets all the registration tokens */
@@ -79,7 +79,7 @@ export const getRegistrationTokens = () => Array.from(registrationTokens);
 /** Add a registration token */
 export const addRegistrationToken = async (token: string) => {
   registrationTokens.add(token);
-  await updateFirestore();
+  await updateFirestoreTokens();
 };
 
 /** Remove a registration token */
@@ -87,7 +87,7 @@ export const removeRegistrationToken = async (token: string) => {
   registrationTokens = new Set(
     Array.from(registrationTokens).filter((e) => e !== token)
   );
-  await updateFirestore();
+  await updateFirestoreTokens();
 };
 
 export const loiCountDelta = async () => {

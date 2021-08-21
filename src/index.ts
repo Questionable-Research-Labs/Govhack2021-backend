@@ -42,7 +42,7 @@ let docRef = db.collection("registrationTokens").doc(docName);
 // Get tokens from firestore
 (async () => {
   let doc = await docRef.get();
-  registrationTokens = doc.data()["tokens"];
+  registrationTokens = doc.data()["tokens"].filter((e: string) => e !== "");
   console.log("Fetched tokens from firesotre", registrationTokens);
 })();
 
@@ -94,7 +94,10 @@ const updateDatePushed = async () => {
       registrationTokens.length > 0
     ) {
       const message: admin.messaging.MulticastMessage = {
-        data: {},
+        data: {
+          no: "yes",
+          yes: "no",
+        },
         tokens: registrationTokens,
       };
 

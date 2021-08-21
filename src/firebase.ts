@@ -3,6 +3,11 @@ import { env } from "process";
 import { config } from "dotenv";
 import axios from "axios";
 
+interface DatasetInfo {
+  loiCount: number;
+  pushedDate: string;
+}
+
 // Load .env file
 config();
 
@@ -32,7 +37,7 @@ const datasetInfoDocName = env.DEV ? "devInfo" : "info";
 let datasetInfoDocRef = db.collection("datasetInfo").doc(datasetInfoDocName);
 
 // Get the number of locations of interest
-let loiCount = 0;
+let datasetInfo: DatasetInfo;
 
 // Get tokens from firestore
 (async () => {
@@ -43,7 +48,22 @@ let loiCount = 0;
   );
   doc = await datasetInfoDocRef.get();
   docData = doc.data();
-  loiCount = typeof docData === "undefined" ? 0 : docData["loiCount"] | 0;
+  datasetInfo =
+    typeof docData === "undefined"
+      ? {
+          loiCount: 0,
+          pushedDate: "",
+        }
+      : {
+          loiCount:
+            typeof docData["loiCount"] === "undefined"
+              ? 0
+              : docData["loiCount"],
+          pushedDate:
+            typeof docData["pushedDate"] === "undefined"
+              ? ""
+              : docData["pushedDate"],
+        };
   console.log("Fetched tokens from firesotre", registrationTokens);
 })();
 
@@ -76,13 +96,29 @@ export const loiCountDelta = async () => {
   );
   if (response.status === 200) {
     let newLoiCount = response.data["features"].length;
+    let loiCount = datasetInfo.loiCount;
 
-    await datasetInfoDocRef.set({
+    datasetInfo = {
+      ...datasetInfo,
       loiCount: newLoiCount,
-    });
+    };
+
+    await datasetInfoDocRef.set(datasetInfo);
 
     return newLoiCount - loiCount;
   }
 };
 
-export const getLoiCount = () => loiCount;
+export const getLoiCount = () => datasetInfo.loiCount;
+
+export const setDatePushed = async (date: string) => {
+  datasetInfo = {
+    ...datasetInfo,
+    pushedDate: date,
+  };
+  console.log(date);
+  console.log(datasetInfo);
+  await datasetInfoDocRef.set(datasetInfo);
+};
+
+export const getDatePushed = () => datasetInfo.pushedDate;

@@ -4,6 +4,8 @@ import cors from "cors";
 import admin from "firebase-admin";
 import {
   addRegistrationToken,
+  getDatePushed,
+  setDatePushed,
   getRegistrationTokens,
   loiCountDelta,
   removeRegistrationToken,
@@ -23,8 +25,6 @@ app.use(
 
 const port = 5000;
 
-let datePushed: string = "";
-
 const updateDatePushed = async () => {
   let request: any = await graphql(
     createRequest({
@@ -37,15 +37,18 @@ const updateDatePushed = async () => {
 
   // Cancer.
   if (request?.repository?.ref?.target?.history?.edges.length > 0) {
-    let newDatePushed =
+    let newPushedDate =
       request?.repository?.ref?.target?.history?.edges[0]?.node?.committedDate;
-    if (datePushed == "") {
+
+    let pushedDate = getDatePushed();
+
+    if (pushedDate == "") {
       loiCountDelta();
     }
     // Check to see if the date has updated
     if (
-      datePushed !== "" &&
-      newDatePushed !== datePushed &&
+      pushedDate !== "" &&
+      newPushedDate !== pushedDate &&
       getRegistrationTokens().length > 0
     ) {
       let loiDelta = loiCountDelta();
@@ -71,19 +74,22 @@ const updateDatePushed = async () => {
         });
     }
 
-    datePushed = newDatePushed;
+    console.log(newPushedDate);
+
+    setDatePushed(newPushedDate);
+    console.log("Updated data");
   }
 };
 
-updateDatePushed();
+setTimeout(updateDatePushed, 1500);
 
 setInterval(updateDatePushed, 15 * 1000 * 60);
-// setInterval(updateDatePushed, 1000);
+// setInterval(updategetDatePushed(), 1000);
 
 app.get("/updated", (req, res) => {
   res.send(
     JSON.stringify({
-      datePushed: datePushed,
+      getDatePushed: getDatePushed(),
     })
   );
 });

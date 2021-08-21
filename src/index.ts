@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
-import { Octokit, App } from "octokit";
-import { allowedNodeEnvironmentFlags, env } from "process";
+import { Octokit } from "octokit";
+import { env } from "process";
 import cors from "cors";
 
 dotenv.config();
@@ -28,7 +28,13 @@ const updateDatePushed = async () => {
 
   if (commitsResponse.status === 200) {
     let commits = commitsResponse.data;
-    datePushed = commits[0].commit.author.date;
+    let newDatePushed = commits[0].commit.author.date;
+
+    if (newDatePushed !== datePushed) {
+      // TODO: Implement push notifications
+    }
+
+    datePushed = newDatePushed;
   }
 };
 

@@ -40,6 +40,8 @@ const updateDatePushed = async () => {
 
     let pushedDate = getDatePushed();
 
+    console.log("New: ", newPushedDate, "Old", pushedDate);
+
     if (pushedDate == "") {
       loiCountDelta();
     }
@@ -50,7 +52,8 @@ const updateDatePushed = async () => {
       getRegistrationTokens().length > 0
     ) {
       let loiDelta = await loiCountDelta();
-      if (loiDelta === 0) {
+      console.log(loiDelta);
+      if (loiDelta !== 0) {
         const message: admin.messaging.MulticastMessage = {
           notification: {
             title: "New COVID-19 Locations of interest",
@@ -85,10 +88,10 @@ const updateDatePushed = async () => {
   }
 };
 
-setTimeout(updateDatePushed, 1500);
+// setTimeout(updateDatePushed, 3000);
 
-setInterval(updateDatePushed, 15 * 1000 * 60);
-// setInterval(updategetDatePushed(), 1000);
+// setInterval(updateDatePushed, 15 * 1000 * 60);
+setInterval(updateDatePushed, 3000);
 
 app.get("/updated", (req, res) => {
   res.send(

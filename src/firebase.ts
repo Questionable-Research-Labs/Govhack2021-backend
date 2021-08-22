@@ -65,6 +65,7 @@ let datasetInfo: DatasetInfo;
               : docData["pushedDate"],
         };
   console.log("Fetched tokens from firesotre", registrationTokens);
+  console.log("dataset info", datasetInfo);
 })();
 
 /** Updates the tokens stored in firestore to match local data */
@@ -96,7 +97,7 @@ export const loiCountDelta = async () => {
     "https://raw.githubusercontent.com/minhealthnz/nz-covid-data/main/locations-of-interest/august-2021/locations-of-interest.geojson"
   );
   if (response.status === 200) {
-    let newLoiCount = response.data["features"].length;
+    let newLoiCount = response.data.features.length;
     let loiCount = datasetInfo.loiCount;
 
     datasetInfo = {
@@ -105,6 +106,8 @@ export const loiCountDelta = async () => {
     };
 
     await datasetInfoDocRef.set(datasetInfo);
+
+    console.log("New:", newLoiCount, "Old:", loiCount);
 
     return newLoiCount - loiCount;
   }
@@ -119,8 +122,6 @@ export const setDatePushed = async (date: string) => {
     ...datasetInfo,
     pushedDate: date,
   };
-  console.log(date);
-  console.log(datasetInfo);
   await datasetInfoDocRef.set(datasetInfo);
 };
 

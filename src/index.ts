@@ -88,10 +88,10 @@ const updateDatePushed = async () => {
   }
 };
 
-// setTimeout(updateDatePushed, 3000);
+setTimeout(updateDatePushed, 3000);
 
-// setInterval(updateDatePushed, 15 * 1000 * 60);
-setInterval(updateDatePushed, 3000);
+setInterval(updateDatePushed, 15 * 1000 * 60);
+// setInterval(updateDatePushed, 3000);
 
 app.get("/updated", (req, res) => {
   res.send(
@@ -100,7 +100,6 @@ app.get("/updated", (req, res) => {
     })
   );
 });
-
 
 // DEPRECATED
 // also this is lines of interest, not loli

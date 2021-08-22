@@ -53,26 +53,32 @@ const updateDatePushed = async () => {
       getRegistrationTokens().length > 0
     ) {
       let loiDelta = await loiCountDelta();
-      const message: admin.messaging.MulticastMessage = {
-        notification: {
-          title: "New Covid19 Locations of interest",
-          body: `There are ${loiDelta} new Covid19 locations of interest, check the app to see if there are any around you.`,
-        },
-        tokens: getRegistrationTokens(),
-      };
+      if (loiDelta === 0) {
+        const message: admin.messaging.MulticastMessage = {
+          notification: {
+            title: "New Covid19 Locations of interest",
+            body: `There are ${loiDelta} new Covid19 locations of interest, check the app to see if there are any around you.`,
+          },
+          tokens: getRegistrationTokens(),
+        };
 
-      // Send a message to the device corresponding to the provided
-      // registration token.
-      admin
-        .messaging()
-        .sendMulticast(message)
-        .then((response) => {
-          // Response is a message ID string.
-          console.log("Successfully sent ", response.successCount, " messages");
-        })
-        .catch((error) => {
-          console.log("Error sending message:", error);
-        });
+        // Send a message to the device corresponding to the provided
+        // registration token.
+        admin
+          .messaging()
+          .sendMulticast(message)
+          .then((response) => {
+            // Response is a message ID string.
+            console.log(
+              "Successfully sent ",
+              response.successCount,
+              " messages"
+            );
+          })
+          .catch((error) => {
+            console.log("Error sending message:", error);
+          });
+      }
     }
 
     console.log(newPushedDate);

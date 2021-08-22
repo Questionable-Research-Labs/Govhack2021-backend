@@ -53,8 +53,8 @@ const updateDatePushed = async () => {
       if (loiDelta === 0) {
         const message: admin.messaging.MulticastMessage = {
           notification: {
-            title: "New Covid19 Locations of interest",
-            body: `There are ${loiDelta} new Covid19 locations of interest, check the app to see if there are any around you.`,
+            title: "New COVID-19 Locations of interest",
+            body: `There are ${loiDelta} new COVID-19 locations of interest, check the app to see if there are any around you.`,
           },
           tokens: getRegistrationTokens(),
         };

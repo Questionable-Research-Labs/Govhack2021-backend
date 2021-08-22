@@ -98,6 +98,9 @@ app.get("/updated", (req, res) => {
   );
 });
 
+
+// DEPRECATED
+// also this is lines of interest, not loli
 app.get("/loi", (req, res) => {
   res.send(
     JSON.stringify({

@@ -17,10 +17,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://govhack2021.fallstop.workers.dev",
-    ],
+    origin: ["http://localhost:3000", "https://toi.qrl.nz"],
   })
 );
 

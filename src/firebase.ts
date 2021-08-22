@@ -14,7 +14,7 @@ config();
 let registrationTokens: Set<string> = new Set();
 
 // Get the account creds from the enjoinment valuables
-const serviceAccount = JSON.parse(env.SERVICE_ACCOUNT);
+const serviceAccount = JSON.parse(env.SERVICE_ACCOUNT ?? "{}");
 
 // Initialize firebase
 admin.initializeApp({
@@ -43,9 +43,10 @@ let datasetInfo: DatasetInfo;
 (async () => {
   let doc = await tokensDocRef.get();
   let docData = doc.data();
-  registrationTokens = new Set(
-    docData["tokens"].filter((e: string) => e !== "")
-  );
+  registrationTokens =
+    typeof docData !== "undefined"
+      ? new Set(docData["tokens"].filter((e: string) => e !== ""))
+      : new Set();
   doc = await datasetInfoDocRef.get();
   docData = doc.data();
   datasetInfo =
@@ -55,14 +56,8 @@ let datasetInfo: DatasetInfo;
           pushedDate: "",
         }
       : {
-          loiCount:
-            typeof docData["loiCount"] === "undefined"
-              ? 0
-              : docData["loiCount"],
-          pushedDate:
-            typeof docData["pushedDate"] === "undefined"
-              ? ""
-              : docData["pushedDate"],
+          loiCount: docData["loiCount"] ?? 0,
+          pushedDate: docData["pushedDate"] ?? "",
         };
   console.log("Fetched tokens from firesotre", registrationTokens);
   console.log("dataset info", datasetInfo);

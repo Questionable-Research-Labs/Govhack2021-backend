@@ -53,11 +53,12 @@ const updateDatePushed = async () => {
     ) {
       let loiDelta = await loiCountDelta();
       console.log(loiDelta);
-      if (loiDelta !== 0) {
+      if (loiDelta > 0) {
         const message: admin.messaging.MulticastMessage = {
           notification: {
             title: "New COVID-19 Locations of interest",
             body: `There are ${loiDelta} new COVID-19 locations of interest, check the app to see if there are any around you.`,
+            imageUrl: "https://toi.qrl.nz/icons/icon@512.png"
           },
           tokens: getRegistrationTokens(),
         };
